@@ -1,0 +1,8 @@
+name = VGM
+description = "Developmnet for VGM"
+package = "VGM"
+core = 7.x
+project = "VGM"
+
+dependencies[]=jquery_update
+;;dependencies[]=views

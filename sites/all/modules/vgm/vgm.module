@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * Implements hook_menu().
+*/
+
+function vgm_menu() {
+  $items['test_mongo_atlas'] = array(
+    'title' => 'Test Mongo db Atlas connection',
+    'page callback' => 'test_mongo_atlas',
+    'access callback' => 'user_is_logged_in',
+    'file' => 'test_mongo_atlas.inc',
+  );
+  return $items;
+}
+
+
+function vgm_theme($existing, $type, $theme, $path){
+	$theme = array();
+  $theme['test-mongo-atlas-content'] = array(
+    'template' => 'templates/test-mongo-atlas-content',
+    'variables' => array(),
+  );
+	return $theme;
+}
