@@ -1,0 +1,7 @@
+{
+    "name": "vgm",
+    "description": "Mongodb php library",
+    "require": {
+        "mongodb/mongodb": "^1.4"
+    }
+}

@@ -1,4 +1,93 @@
-# mogo client 
+# MongoDB Atlas
+## Mongo db php
+The currently maintained driver is the [mongodb](https://pecl.php.net/package/mongodb) extension available from PECL.
+This driver can be used stand-alone, although it is very bare-bones.
+
+You should consider using the driver with the complimentary [PHP library](https://github.com/mongodb/mongo-php-library), which implements a more full-featured API on top of the bare-bones driver.
+
+Further information on this architecture may be found in the [PHP.net documentation](http://php.net/manual/en/mongodb.overview.php).
+
+### Insall PHP driver mongodb extension
+
+- **From repositories**
+
+  Ho installato il pacchetto
+  ```
+  sudo apt-get install php-mongodb
+  ```
+
+  ed abilitato con
+  ```
+  sudo phpenmod mongodb
+  ```
+
+  Questo pacchetto fornisce la base bare-bones con le classi base
+  ```
+  $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+  ```
+  ma non riesce ad effettuare l'autenticazione in quanto la versione è troppo vecchia.
+
+- **From PECL extensions/modules**
+
+  Come da documentazione installiamo l'estensione PECL
+  Installato
+  ```
+  sudo apt-get install php7.0-dev
+  ```
+  Installato
+  ```
+  sudo apt-get install php-pear
+  ```
+  Installato mongodb PECL extesion/module
+  ```
+  sudo pecl install mongodb
+  ```
+  L'extension va a sovrascrivere quella relativa al pacchetto fornito da repository
+  ```
+  Installing '/usr/lib/php/20151012/mongodb.so'
+  ```
+
+  Una volta installato il driver bisogna abilitarlo
+  ```
+  sudo phpenmod mongodb
+  ```
+  E' possibile verificare se il modulo è abilitato e la versione con `phpinfo();`
+### Install PHP library
+La libreria PHP può essere installata utilizzando composer.
+
+Per lavorare con composer in drupal 7 utilizaimo il modulo [Composer Manager](https://www.drupal.org/project/composer_manager) che serve per gestire multipli composer.json sparsi fra i vari moduli
+
+Dopo aver installato il modulo viene generata una directory `/sites/default/files/composer` con un file composer.json di default lanciamo
+`/sites/default/files/composer$ composer install`
+
+Poi installiamo la libreria
+```
+ilpise@amytis:/var/www/html/vgm/sites/default/files/composer$ composer require mongodb/mongodb
+Using version ^1.4 for mongodb/mongodb
+./composer.json has been updated
+Loading composer repositories with package information
+Updating dependencies (including require-dev)
+Package operations: 1 install, 0 updates, 0 removals
+  - Installing mongodb/mongodb (1.4.2): Downloading (100%)         
+Writing lock file
+Generating autoload file
+```
+
+Nel modulo vgm aggiungiamo un file composer.json
+```
+{
+    "name": "vgm",
+    "description": "Mongodb php library",
+    "require": {
+        "mongodb/mongodb": "^1.4"
+    }
+}
+```
+che specifica che la libreria mongo db è richiesta dal modulo vgm
+
+la libreria/librerie vere e proprie vengono installate nella directory `sites/all/vendor`
+
+## Mogo client
 Per collegarsi a mongodb atlas da command line è necessario utilizzare mongoclient 4.0.4 che va scaricato
 
 ~/Mindly/vgm/mongodb-linux-x86_64-ubuntu1604-4.0.4/bin$ ./mongo "mongodb://cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/test?replicaSet=Cluster0-shard-0" --ssl --authenticationDatabase admin --username vgm --password 1qazxsw2
@@ -18,52 +107,3 @@ local  2.783GB
 test   0.000GB
 MongoDB Enterprise Cluster0-shard-0:PRIMARY> exit
 bye
-
-# Mongo db php 
-The currently maintained driver is the [mongodb](https://pecl.php.net/package/mongodb) extension available from PECL.
-
-This driver can be used stand-alone, although it is very bare-bones. You should consider using the driver with the complimentary [PHP library](https://github.com/mongodb/mongo-php-library), which implements a more full-featured API on top of the bare-bones driver. Further information on this architecture may be found in the [PHP.net documentation](http://php.net/manual/en/mongodb.overview.php).
-# Insall PHP Library for MongoDB
-
-http://php.net/manual/en/mongodb.tutorial.library.php
-
-https://github.com/mongodb/mongo-php-library
-
-# Installazione
-Ho installato il pacchetto
-```
-sudo apt-get install php-mongodb
-```
-
-ed abilitarlo con 
-```
-sudo phpenmod mongodb
-```
-
-Questo pacchetto fornisce la base bare-bones con le classi base
-```
-$manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-```
-ma non riesce ad effettuare l'autenticazione in quanto la versione è troppo vecchia.
-
-## 
-Come da documentazione installiamo l'estensione PECL
-Installato
-```
-sudo apt-get install php7.0-dev
-```
-Installato
-```
-sudo apt-get install php-pear
-```
-Installato mongodb PECL extesion/module
-```
-sudo pecl install mongodb
-```
-L'extension va a sovrascrivere quella relativa al pacchetto fornito da repository
-```
-Installing '/usr/lib/php/20151012/mongodb.so'
-```
-
-
-

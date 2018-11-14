@@ -158,60 +158,23 @@
       <?php print render($page['content']); ?>
       <?php
 
+      // Using PHP full-featured API on top of the bare-bones driver
+      $client = new MongoDB\Client(
+          'mongodb://vgm:1qazxsw2@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin"
+          ');
 
+      $db = $client->test;
+      drupal_set_message("<pre>".print_r($db,TRUE)."</pre>");
+
+      // Using the mongodb driver (The bare-bones)
       $manager = new MongoDB\Driver\Manager("mongodb://vgm:1qazxsw2@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true");
-
       drupal_set_message("<pre>".print_r($manager,TRUE)."</pre>");
-
       // Query Class
       $query = new MongoDB\Driver\Query(array('age' => 30));
       // Output of the executeQuery will be object of MongoDB\Driver\Cursor class
       $cursor = $manager->executeQuery('test.test', $query);
-
       drupal_set_message("<pre>".print_r($cursor,TRUE)."</pre>");
-      // $bulk = new MongoDB\Driver\BulkWrite;
-      // $bulk->insert(['x' => 1]);
-      // $manager->executeBulkWrite('test.test', $bulk);
 
-//
-      // $command = new MongoDB\Driver\Command(['ping' => 1]);
-      //
-      // try {
-      //     $cursor = $manager->executeCommand('admin', $command);
-      // } catch(MongoDB\Driver\Exception $e) {
-      //     echo $e->getMessage(), "\n";
-      //     exit;
-      // }
-      //
-      // /* The ping command returns a single result document, so we need to access the
-      //  * first result in the cursor. */
-      // $response = $cursor->toArray()[0];
-      //
-      // var_dump($response);
-//
-      // $writeConcern = new MongoDB\Driver\WriteConcern(MongoDB\Driver\WriteConcern::MAJORITY, 100);
-      // $result = $manager->executeBulkWrite('db.collection', $bulk, $writeConcern);
-      //
-      // printf("Inserted %d document(s)\n", $result->getInsertedCount());
-      // printf("Matched  %d document(s)\n", $result->getMatchedCount());
-      // printf("Updated  %d document(s)\n", $result->getModifiedCount());
-      // printf("Upserted %d document(s)\n", $result->getUpsertedCount());
-      // printf("Deleted  %d document(s)\n", $result->getDeletedCount());
-      //
-      // foreach ($result->getUpsertedIds() as $index => $id) {
-      //     printf('upsertedId[%d]: ', $index);
-      //     var_dump($id);
-      // }
-      //
-      // /* If the WriteConcern could not be fulfilled */
-      // if ($writeConcernError = $result->getWriteConcernError()) {
-      //     printf("%s (%d): %s\n", $writeConcernError->getMessage(), $writeConcernError->getCode(), var_export($writeConcernError->getInfo(), true));
-      // }
-      //
-      // /* If a write could not happen at all */
-      // foreach ($result->getWriteErrors() as $writeError) {
-      //     printf("Operation#%d: %s (%d)\n", $writeError->getIndex(), $writeError->getMessage(), $writeError->getCode());
-      // }
       ?>
     </section>
 
