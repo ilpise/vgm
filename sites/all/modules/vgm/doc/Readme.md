@@ -52,6 +52,7 @@ Further information on this architecture may be found in the [PHP.net documentat
   sudo phpenmod mongodb
   ```
   E' possibile verificare se il modulo è abilitato e la versione con `phpinfo();`
+
 ### Install PHP library
 La libreria PHP può essere installata utilizzando composer.
 
@@ -86,6 +87,10 @@ Nel modulo vgm aggiungiamo un file composer.json
 che specifica che la libreria mongo db è richiesta dal modulo vgm
 
 la libreria/librerie vere e proprie vengono installate nella directory `sites/all/vendor`
+
+- Per ottenere la url cui connettersi
+![Get MongoDB Atlas connection uri](./img/connect_uri_mongodb_atlas.png)
+
 
 ## Mogo client
 Per collegarsi a mongodb atlas da command line è necessario utilizzare mongoclient 4.0.4 che va scaricato
