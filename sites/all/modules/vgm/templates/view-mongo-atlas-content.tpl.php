@@ -158,49 +158,6 @@
       <?php print render($page['content']); ?>
       <?php
 
-      //
-
-      // $string = file_get_contents(drupal_get_path('module', 'vgm') . '/doc/testvgm.json');
-      // $json_a = json_decode($string, true);
-      // // drupal_set_message("Example json <pre>".print_r($json_a,TRUE)."</pre>");
-      //
-      //
-      // // // Copy the example uri
-      // // // mongodb://vgm:<PASSWORD>@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true
-      // $uri = 'mongodb://cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017';
-      // $uri_option = array('username'=>'vgm',
-      //                     'password'=>'1qazxsw2',
-      //                     'ssl'=>true,
-      //                     'replicaSet'=>'Cluster0-shard-0',
-      //                     'authSource'=>'admin',
-      //                     'retryWrites'=>true,
-      //                     // 'serverSelectionTryOnce'=>false,
-      //                     // 'serverSelectionTimeoutMS'=>15000
-      //                   );
-      //
-      // $client = new MongoDB\Client($uri,$uri_option);
-      // // drupal_set_message("Client <pre>".print_r($client,TRUE)."</pre>");
-      //
-      // $db = $client->test;
-      // $collection = $db->test;
-      // //
-      // // drupal_set_message("<pre>".print_r($db,TRUE)."</pre>");
-      // //
-      // // $insertOneResult = $collection->insertOne([
-      // //     'username' => 'admin',
-      // //     'email' => 'admin@example.com',
-      // //     'name' => 'Admin User',
-      // // ]);
-      // //
-      // // printf("Inserted %d document(s)\n", $insertOneResult->getInsertedCount());
-      // //
-      // // var_dump($insertOneResult->getInsertedId());
-      //
-      // $insertManyResult = $collection->insertMany($json_a['items']);
-      //
-      // printf("Inserted %d document(s)\n", $insertManyResult->getInsertedCount());
-      //
-      // var_dump($insertManyResult->getInsertedIds());
 
       ?>
     </section>

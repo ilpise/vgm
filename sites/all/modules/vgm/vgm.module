@@ -5,20 +5,53 @@
 */
 
 function vgm_menu() {
+  $items['admin/config/mongoatlas'] = array(
+    'title' => 'MongoDB Atlas',
+    'description' => 'Configuration for MongoDB Atlas cluster',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mongoatlas_form'),
+    'access arguments' => array('access administration pages'),
+  );
+
   $items['test_mongo_atlas'] = array(
     'title' => 'Test Mongo db Atlas connection',
     'page callback' => 'test_mongo_atlas',
     'access callback' => 'user_is_logged_in',
     'file' => 'test_mongo_atlas.inc',
   );
+  $items['visualization'] = array(
+    'title' => 'View data',
+    'page callback' => 'view_mongo_data',
+    'access callback' => 'user_is_logged_in',
+    'file' => 'test_mongo_atlas.inc',
+  );
   return $items;
 }
 
+function mongoatlas_form (){
+  $form = array();
+
+  $form['cluster_uri'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster string'),
+    '#default_value' => variable_get('cluster_uri', 'mongodb://cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017'),
+    '#description' => t("The cluster to connect to"),
+    '#required' => TRUE,
+  );
+
+
+
+  return system_settings_form($form);
+}
 
 function vgm_theme($existing, $type, $theme, $path){
 	$theme = array();
   $theme['test-mongo-atlas-content'] = array(
     'template' => 'templates/test-mongo-atlas-content',
+    'variables' => array(),
+  );
+  $theme['view-mongo-atlas-content'] = array(
+    'template' => 'templates/view-mongo-atlas-content',
     'variables' => array(),
   );
 	return $theme;
