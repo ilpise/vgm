@@ -7,6 +7,13 @@
 function vgm_menu() {
   $items['admin/config/mongoatlas'] = array(
     'title' => 'MongoDB Atlas',
+    'page callback' => 'system_admin_menu_block_page', //DONT CHANGE THIS!
+    'access arguments' => array('administer site configuration'), // Permission needed to view this area
+    'file' => 'system.admin.inc', //DONT CHANGE THIS!
+    'file path' => drupal_get_path('module', 'system'), //DONT CHANGE THIS!
+  );
+  $items['admin/config/mongoatlas/server'] = array(
+    'title' => 'MongoDB Atlas',
     'description' => 'Configuration for MongoDB Atlas cluster',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mongoatlas_form'),
