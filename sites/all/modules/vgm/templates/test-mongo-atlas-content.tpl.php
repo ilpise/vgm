@@ -158,22 +158,49 @@
       <?php print render($page['content']); ?>
       <?php
 
-      // Using PHP full-featured API on top of the bare-bones driver
-      $client = new MongoDB\Client(
-          'mongodb://vgm:1qazxsw2@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/admin?ssl=true&replicaSet=Mycluster0-shard-0&authSource=admin"
-          ');
+      //
+
+      $string = file_get_contents(drupal_get_path('module', 'vgm') . '/doc/testvgm.json');
+      $json_a = json_decode($string, true);
+      // drupal_set_message("Example json <pre>".print_r($json_a,TRUE)."</pre>");
+
+
+      // // Copy the example uri
+      // // mongodb://vgm:<PASSWORD>@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true
+      $uri = 'mongodb://cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017';
+      $uri_option = array('username'=>'vgm',
+                          'password'=>'1qazxsw2',
+                          'ssl'=>true,
+                          'replicaSet'=>'Cluster0-shard-0',
+                          'authSource'=>'admin',
+                          'retryWrites'=>true,
+                          // 'serverSelectionTryOnce'=>false,
+                          // 'serverSelectionTimeoutMS'=>15000
+                        );
+
+      $client = new MongoDB\Client($uri,$uri_option);
+      // drupal_set_message("Client <pre>".print_r($client,TRUE)."</pre>");
 
       $db = $client->test;
-      drupal_set_message("<pre>".print_r($db,TRUE)."</pre>");
+      $collection = $db->test;
+      //
+      // drupal_set_message("<pre>".print_r($db,TRUE)."</pre>");
+      //
+      // $insertOneResult = $collection->insertOne([
+      //     'username' => 'admin',
+      //     'email' => 'admin@example.com',
+      //     'name' => 'Admin User',
+      // ]);
+      //
+      // printf("Inserted %d document(s)\n", $insertOneResult->getInsertedCount());
+      //
+      // var_dump($insertOneResult->getInsertedId());
 
-      // Using the mongodb driver (The bare-bones)
-      $manager = new MongoDB\Driver\Manager("mongodb://vgm:1qazxsw2@cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true");
-      drupal_set_message("<pre>".print_r($manager,TRUE)."</pre>");
-      // Query Class
-      $query = new MongoDB\Driver\Query(array('age' => 30));
-      // Output of the executeQuery will be object of MongoDB\Driver\Cursor class
-      $cursor = $manager->executeQuery('test.test', $query);
-      drupal_set_message("<pre>".print_r($cursor,TRUE)."</pre>");
+      $insertManyResult = $collection->insertMany($json_a['items']);
+
+      printf("Inserted %d document(s)\n", $insertManyResult->getInsertedCount());
+
+      var_dump($insertManyResult->getInsertedIds());
 
       ?>
     </section>

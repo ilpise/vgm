@@ -5,4 +5,4 @@ core = 7.x
 project = "VGM"
 
 dependencies[]=jquery_update
-;;dependencies[]=views
+dependencies[]=composer_manager
