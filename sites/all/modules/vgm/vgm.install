@@ -1,0 +1,368 @@
+<?php
+
+
+/**/
+/* Installation of content types */
+/**/
+function vgm_enable() {
+  $t = get_t();
+    // Add fields and instances to profile types
+  _vgm_shippers();
+  _vgm_authorized_people();
+  // _vgm_users_truck_driver(); //
+
+  // _vgm_set_permissions();// Set profile2 access permissions to auth users
+
+ }
+
+function vgm_uninstall() {
+ //  if (module_exists('menu')) {
+ //   if ($my_menu = menu_load('menu-project-structure')) {
+ //    menu_delete($my_menu);
+ //  }
+ // }
+}
+
+// Shippers Content Type
+function _vgm_shippers(){
+  $t = get_t();
+  // Define custom content type to store Mobile phone - validation code pairs
+  $content_type = array(
+    'type'          => 'shippers',
+    'name'          => $t('Shippers'),
+    'description'	=> $t('Contacts shippers'),
+    'title_label'	=> $t('Name'),
+    'base'          => 'node_content',
+    'custom'        => TRUE,
+  );
+  $node_type = node_type_set_defaults($content_type);
+  node_type_save($node_type);
+  // Setting for the content_type
+  variable_set('menu_options_shippers', array()); // set default menu empty
+  variable_set('comment_shippers', COMMENT_NODE_CLOSED); // disable comments
+  variable_set('node_options_shippers', array('status')); // Publishing options - not promoted
+  variable_set('node_preview_shippers', 0); // Disable preview button
+  variable_set('node_submitted_shippers',0); // Hide author and date information
+
+  $fields = array(
+    'address' =>          array('field_name' => 'vgm_address','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'address_number' =>   array('field_name' => 'vgm_address_number','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'zip_code' =>         array('field_name' => 'vgm_zip_code','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'address_province' => array('field_name' => 'vgm_address_province','type' => 'list_text','cardinality' => 1,'translatable' => FALSE,
+      'settings' => array(
+            'allowed_values' => '_field_province_options_list',
+            'allowed_values_function' => '_field_province_options_list',
+      ),
+    ),
+    'address_city' =>     array('field_name' => 'vgm_address_city','type' => 'list_text','cardinality' => 1,'translatable' => FALSE,
+      'settings' => array(
+            'allowed_values' => '_field_comuni_options_list',
+            'allowed_values_function' => '_field_comuni_options_list',
+      ),
+    ),
+    'e_mail' =>           array('field_name' => 'vgm_e_mail','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'phone' =>            array('field_name' => 'vgm_phone','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'address' => array('entity_type' => 'node','field_name' => 'vgm_address','bundle' => 'shippers','label' => $t('Address'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'address_number' => array('entity_type' => 'node','field_name' => 'vgm_address_number','bundle' => 'shippers','label' => $t('Number'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'zip_code' => array('entity_type' => 'node','field_name' => 'vgm_zip_code','bundle' => 'shippers','label' => $t('Zip code'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'address_province' => array('entity_type' => 'node','field_name' => 'vgm_address_province','bundle' => 'shippers','label' => $t('Province'),'required' => TRUE,
+      'widget' => array('type' => 'options_select','weight' => 0,),
+    ),
+    'address_city' => array('entity_type' => 'node','field_name' => 'vgm_address_city','bundle' => 'shippers','label' => $t('City'),'required' => TRUE,
+      'widget' => array('type' => 'options_select','weight' => 0,),
+    ),
+    'e_mail' => array('entity_type' => 'node','field_name' => 'vgm_e_mail','bundle' => 'shippers','label' => $t('E mail'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'phone' => array('entity_type' => 'node','field_name' => 'vgm_phone','bundle' => 'shippers','label' => $t('Phone'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+
+
+  );
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}
+
+// Authorized People Content Type
+function _vgm_authorized_people(){
+  $t = get_t();
+  // Define custom content type to store Mobile phone - validation code pairs
+  $content_type = array(
+    'type'          => 'authorized_people',
+    'name'          => $t('Authorized people'),
+    'description'	=> $t('Authorized people'),
+    'title_label'	=> $t('Name'),
+    'base'          => 'node_content',
+    'custom'        => TRUE,
+  );
+  $node_type = node_type_set_defaults($content_type);
+  node_type_save($node_type);
+  // Setting for the content_type
+  variable_set('menu_options_authorized_people', array()); // set default menu empty
+  variable_set('comment_authorized_people', COMMENT_NODE_CLOSED); // disable comments
+  variable_set('node_options_authorized_people', array('status')); // Publishing options - not promoted
+  variable_set('node_preview_authorized_people', 0); // Disable preview button
+  variable_set('node_submitted_authorized_people',0); // Hide author and date information
+
+  $fields = array(
+    'surname' =>   array('field_name' => 'vgm_surname','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    // 'e_mail' =>    array('field_name' => 'field_e_mail','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    // 'phone' =>     array('field_name' => 'vgm_phone','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'stamp' =>     array('field_name' => 'vgm_stamp','type' => 'file','cardinality' => 1,'translatable' => FALSE,),
+    'signature' => array('field_name' => 'vgm_signature','type' => 'file','cardinality' => 1,'translatable' => FALSE,),
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'surname' => array('entity_type' => 'node','field_name' => 'vgm_surname','bundle' => 'authorized_people','label' => $t('Surname'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'e_mail' => array('entity_type' => 'node','field_name' => 'vgm_e_mail','bundle' => 'authorized_people','label' => $t('E mail'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'phone' => array('entity_type' => 'node','field_name' => 'vgm_phone','bundle' => 'authorized_people','label' => $t('Phone'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'stamp' => array('entity_type' => 'node','field_name' => 'vgm_stamp','bundle' => 'authorized_people','label' => $t('Stamp'),'required' => TRUE,
+      'settings' => array(
+        'file_directory' => 'auth_people',
+        'file_extensions' => 'pdf jpg',
+        'max_filesize' => '2MB',
+        'title_field' => '',
+      ),
+      'widget' => array( 'type' => 'file_generic', 'weight' => -4,),
+    ),
+    'signature' => array('entity_type' => 'node','field_name' => 'vgm_signature','bundle' => 'authorized_people','label' => $t('Signature'),'required' => TRUE,
+      'settings' => array(
+        'file_directory' => 'auth_people',
+        'file_extensions' => 'pdf jpg',
+        'max_filesize' => '2MB',
+        'title_field' => '',
+      ),
+      'widget' => array( 'type' => 'file_generic', 'weight' => -4,),
+    ),
+  );
+
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}
+
+// function vgm_set_permissions(){
+//   $role = user_role_load_by_name('authenticated user');
+//   // Residence data
+//   user_role_grant_permissions($role->rid, 'view own step1residenza profile');
+//   user_role_grant_permissions($role->rid, 'edit own step1residenza profile');
+//   // Mobile phone
+//   user_role_grant_permissions($role->rid, 'view own step3 profile');
+//   user_role_grant_permissions($role->rid, 'edit own step3 profile');
+//   // Banck account credit card
+//   user_role_grant_permissions($role->rid, 'view own step4 profile');
+//   user_role_grant_permissions($role->rid, 'edit own step4 profile');
+//
+// }
+
+$roles = array('office','vettore');
+
+foreach($roles as $name) {
+   $existing_role = user_role_load_by_name($name);
+   if (empty($existing_role)){
+      $role = new stdClass();
+       $role->name = $name;
+       user_role_save($role);
+    }
+}
+/**
+ * 1st Deployment: install VGM content type;
+ */
+ // Take a look to http://befused.com/drupal/site-deployment-module
+
+// VGM Content Type
+function vgm_update_7100(){
+  $t = get_t();
+  // Define custom content type to store Mobile phone - validation code pairs
+  $content_type = array(
+    'type'          => 'vgm',
+    'name'          => $t('VGM'),
+    'description'	=> $t('Carico'),
+    'title_label'	=> $t('id'),
+    'base'          => 'node_content',
+    'custom'        => TRUE,
+  );
+  $node_type = node_type_set_defaults($content_type);
+  node_type_save($node_type);
+  // Setting for the content_type
+  variable_set('menu_options_vgm', array()); // set default menu empty
+  variable_set('comment_vgm', COMMENT_NODE_CLOSED); // disable comments
+  variable_set('node_options_vgm', array('status')); // Publishing options - not promoted
+  variable_set('node_preview_vgm', 0); // Disable preview button
+  variable_set('node_submitted_vgm',0); // Hide author and date information
+
+  $fields = array(
+    'bookingNumber' =>   array('field_name' => 'vgm_booking_n','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'sealNumber' =>     array('field_name' => 'vgm_seal_n','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'containerNumber' => array('field_name' => 'vgm_container_n','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+    'shipperRef' => array('field_name' => 'vgm_shipper_ref',  'type' => 'node_reference',
+  'active' => '1',
+  'locked' => '0',
+  'cardinality' => '1',
+  'settings' => array(
+    'referenceable_types' => array(
+      'shippers' => 'shippers',
+      'article' => 0,
+      'authorized_people' => 0,
+      'page' => 0,
+      'vgm' => 0,
+    ),
+    'view' => array(
+      'view_name' => '',
+      'display_name' => '',
+      'args' => array(),
+    ),
+  ),)
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'bookingNumber' => array('entity_type' => 'node','field_name' => 'vgm_booking_n','bundle' => 'vgm','label' => $t('Booking number'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'sealNumber' => array('entity_type' => 'node','field_name' => 'vgm_seal_n','bundle' => 'vgm','label' => $t('Seal number'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'containerNumber' => array('entity_type' => 'node','field_name' => 'vgm_container_n','bundle' => 'vgm','label' => $t('Container number'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+    'shipperRef' => array('entity_type' => 'node','field_name' => 'vgm_shipper_ref','bundle' => 'vgm','label' => $t('Shipper'),'required' => TRUE,
+      'widget' => array(
+         'weight' => '-4',
+         'type' => 'options_select',
+         'active' => 1,
+         'settings' => array(),
+        ),
+    ),
+  );
+
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}
+
+function vgm_update_7101(){
+  $t = get_t();
+
+  $fields = array(
+    'weigth' =>   array('field_name' => 'vgm_weight','type' => 'number_decimal','cardinality' => 1,'translatable' => FALSE,),
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'weight' => array('entity_type' => 'node','field_name' => 'vgm_weight','bundle' => 'vgm','label' => $t('Weight'),'required' => TRUE,
+      'widget' => array('type' => 'number','weight' => 0, ),
+    ),
+  );
+
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}
+
+function vgm_update_7102(){
+  $t = get_t();
+
+  $fields = array(
+    'place' =>   array('field_name' => 'vgm_place','type' => 'text','cardinality' => 1,'translatable' => FALSE,),
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'place' => array('entity_type' => 'node','field_name' => 'vgm_place','bundle' => 'vgm','label' => $t('Place'),'required' => TRUE,
+      'widget' => array('type' => 'text_textfield','weight' => 0, ),
+    ),
+  );
+
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}
+
+function vgm_update_7104(){
+  $t = get_t();
+
+  $fields = array(
+    'weight_method' =>   array('field_name' => 'vgm_weight_method','type' => 'list_text','cardinality' => 1,'translatable' => FALSE,
+      'settings' => array(
+         'allowed_values' => array(
+           1 => 'Metodo 1',
+           2 => 'Metodo 2',
+         ),
+       ),
+    ),
+    'AuthPeopleRef' => array('field_name' => 'vgm_authpeople_ref',  'type' => 'node_reference',
+  'active' => '1',
+  'locked' => '0',
+  'cardinality' => '1',
+  'settings' => array(
+    'referenceable_types' => array(
+      'shippers' => 0,
+      'article' => 0,
+      'authorized_people' => 'authorized_people',
+      'page' => 0,
+      'vgm' => 0,
+    ),
+    'view' => array(
+      'view_name' => '',
+      'display_name' => '',
+      'args' => array(),
+    ),
+  ),)
+  );
+  foreach( $fields as $field ) {
+    field_create_field($field);
+  }
+  // Step 2 - attach fields
+  $instances = array(
+    'weight_method' => array('entity_type' => 'node','field_name' => 'vgm_weight_method','bundle' => 'vgm','label' => $t('Method'),'required' => TRUE,
+      'widget' => array('type' => 'options_select','weight' => 0, ),
+      'default_value' => array(
+        0 => array(
+          'value' => '1',
+        ),
+      ),
+    ),
+    'AuthPeopleRef' => array('entity_type' => 'node','field_name' => 'vgm_authpeople_ref','bundle' => 'vgm','label' => $t('Authorized people'),'required' => TRUE,
+      'widget' => array(
+         'weight' => 0,
+         'type' => 'options_select',
+         'active' => 1,
+         'settings' => array(),
+        ),
+    ),
+  );
+
+  foreach( $instances as $instance ) {
+    field_create_instance($instance);
+  }
+}

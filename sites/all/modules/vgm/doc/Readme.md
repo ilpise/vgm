@@ -112,3 +112,43 @@ local  2.783GB
 test   0.000GB
 MongoDB Enterprise Cluster0-shard-0:PRIMARY> exit
 bye
+
+# TODO
+vedi https://app.moqups.com/gianfranco.elia@gmail.com/7XIcbnlwpm/viewm
+
+Mobile/Vettore
+Web app su chrome
+
+Vettore/Mobile
+deve inserire
+1. booking number
+2. seal number
+3. container number
+
+inseriti i dati -> Invio VGM
+
+Back office
+Inserimento dati logo Azienda
+
+ - Assegnazione vettore/truck
+ - Assegnazione vettore/gruppoditruck -> possibilità di scegliere il truck da interfaccia vettore
+
+Back office - Fig CRM di mokups
+è una strisciata del vgm inviato
+
+2 tipologie di Contacts **Content types**
+1. _Shipper_ - fields sono in Fig CRM
+2. _Persone autorizzate_ - fields sono in Fig CRM
+3. Ship
+  - User - di tipo vettore/authuser base collegato
+  - Data -
+  - Luogo - prendere il dato da kimax dati mongodb
+  - Shipper - dal content type _Shipper_
+  - Booking number - inserite dal vettore
+  - Seal number - inserite dal vettore
+  - Container number - inserite dal vettore
+  - Peso VGM - prendere il dato da kimax dati mongodb
+  - Metodo (option 1/2) default 1
+  - Persona autorizatta - dal content type  _Persone autorizzate_
+
+  - Genera VGM - pulsante per generare Vgm

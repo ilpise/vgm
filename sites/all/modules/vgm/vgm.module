@@ -32,6 +32,14 @@ function vgm_menu() {
     'access callback' => 'user_is_logged_in',
     'file' => 'test_mongo_atlas.inc',
   );
+  $items['vgm_print_pdf/%'] = array(
+    'type' => MENU_CALLBACK,
+    // 'title' => 'View data',
+    'page arguments' => array(1),
+    'page callback' => 'print_pdf',
+    'access callback' => 'user_is_logged_in',
+    'file' => 'print_pdf.inc',
+  );
   return $items;
 }
 
@@ -61,5 +69,48 @@ function vgm_theme($existing, $type, $theme, $path){
     'template' => 'templates/view-mongo-atlas-content',
     'variables' => array(),
   );
+  $theme['vgm_node_add'] = array(
+    'arguments' => array('form' => NULL),
+    'render element' => 'form',
+    'template' => 'templates/vgm--node--add',
+  );
+  $theme['vgm_node_edit'] = array(
+    'arguments' => array('form' => NULL),
+    'render element' => 'form',
+    'template' => 'templates/vgm--node--edit',
+  );
+
 	return $theme;
+}
+
+function vgm_form_alter(&$form, &$form_state, $form_id) {
+  // drupal_set_message("<pre>".print_r($form_id,TRUE)."</pre>");
+	if ($form_id == "vgm_node_form"){
+    // drupal_set_message("<pre>".print_r($form,TRUE)."</pre>");
+    $node = $form_state['node'];
+    if (!isset($node->nid) || isset($node->is_new)) {
+      // This is a new node.
+      unset($form['vgm_place']);
+      unset($form['vgm_weight_method']);
+      unset($form['vgm_authpeople_ref']);
+      $form['#theme'] = array('vgm_node_add');
+    }
+    else {
+      // This is not a new node.
+      $form['#theme'] = array('vgm_node_edit');
+    }
+	}
+}
+
+
+// This two functions are called to fill values and allowed values for
+// field_comuni and fild_province inside the profile2 step1anagrafica and step1residenza profile
+function _field_comuni_options_list(){
+  $comuni = include drupal_get_path('module', 'vgm') . '/assets/comuniallowed.php';
+  return $comuni;
+}
+
+function _field_province_options_list(){
+  $provincie = include drupal_get_path('module', 'vgm') . '/assets/provincie.php';
+  return $provincie;
 }
