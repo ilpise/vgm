@@ -45,16 +45,79 @@ function vgm_menu() {
 
 function mongoatlas_form (){
   $form = array();
-
-  $form['cluster_uri'] = array(
+  $form['mongoatlas_cluster_username'] = array(
     '#type' => 'textfield',
-    '#title' => t('Cluster string'),
-    '#default_value' => variable_get('cluster_uri', 'mongodb://cluster0-shard-00-00-yikde.mongodb.net:27017,cluster0-shard-00-01-yikde.mongodb.net:27017,cluster0-shard-00-02-yikde.mongodb.net:27017'),
+    '#title' => t('Cluster username'),
+    '#default_value' => variable_get('mongoatlas_cluster_username'),
+    '#description' => t("The user who connect to the database settled in Security -> Mongodb users"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_cluster_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster password'),
+    '#default_value' => variable_get('mongoatlas_cluster_password'),
+    '#description' => t("The password for user who connect to the database settled in Security -> Mongodb users"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_cluster_uri_zero'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster 0 string'),
+    '#default_value' => variable_get('mongoatlas_cluster_uri_zero', 'cluster0-shard-00-00-yikde.mongodb.net:27017'),
+    '#description' => t("The cluster to connect to"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_cluster_uri_one'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster 1 string'),
+    '#default_value' => variable_get('mongoatlas_cluster_uri_one', 'cluster0-shard-00-01-yikde.mongodb.net:27017'),
+    '#description' => t("The cluster to connect to"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_cluster_uri_two'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster 2 string'),
+    '#default_value' => variable_get('mongoatlas_cluster_uri_two', 'cluster0-shard-00-02-yikde.mongodb.net:27017'),
     '#description' => t("The cluster to connect to"),
     '#required' => TRUE,
   );
 
-
+  // Connection options
+  $form['mongoatlas_co_ssl'] = array(
+    '#type' =>'checkbox',
+    '#title' => t('ssl'),
+    '#default_value' => variable_get('mongoatlas_co_ssl', true),
+  );
+  $form['mongoatlas_co_replicaSet'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Cluster replica set'),
+    '#default_value' => variable_get('mongoatlas_co_replicaSet', 'Cluster0-shard-0'),
+    '#description' => t("The cluster replica set"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_co_authsource'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Auth source'),
+    '#default_value' => variable_get('mongoatlas_co_authsource', 'admin'),
+    '#description' => t("The cluster to connect to"),
+    '#required' => TRUE,
+  );
+  $form['mongoatlas_co_retryWrites'] = array(
+    '#type' =>'checkbox',
+    '#title' => 'retryWrites',
+    '#default_value' => variable_get('mongoatlas_co_retryWrites', true),
+  );
+  $form['mongoatlas_co_serverSelectionTryOnce'] = array(
+    '#type' =>'checkbox',
+    '#title' => 'serverSelectionTryOnce',
+    '#default_value' => variable_get('mongoatlas_co_serverSelectionTryOnce', false),
+  );
+  $form['mongoatlas_co_serverSelectionTimeoutMS'] = array(
+    '#type' => 'textfield',
+    '#title' => 'serverSelectionTimeoutMS',
+    '#default_value' => variable_get('mongoatlas_co_serverSelectionTimeoutMS', 15000),
+    '#description' => t("The cluster to connect to"),
+    '#required' => TRUE,
+  );
 
   return system_settings_form($form);
 }
@@ -88,11 +151,55 @@ function vgm_form_alter(&$form, &$form_state, $form_id) {
 	if ($form_id == "vgm_node_form"){
     // drupal_set_message("<pre>".print_r($form,TRUE)."</pre>");
     $node = $form_state['node'];
-    if (!isset($node->nid) || isset($node->is_new)) {
-      // This is a new node.
+    if (!isset($node->nid) || isset($node->is_new)) {// This is a new node.
+
+      // Get last weight from mongodb
+      $uri = 'mongodb://'.variable_get('mongoatlas_cluster_uri_zero').','
+                         .variable_get('mongoatlas_cluster_uri_one').','
+                         .variable_get('mongoatlas_cluster_uri_two');
+
+      $uri_option = array('username'=>variable_get('mongoatlas_cluster_username'),
+                         'password'=>variable_get('mongoatlas_cluster_password'),
+                         'ssl'=>variable_get('mongoatlas_co_ssl'),
+                         'replicaSet'=>variable_get('mongoatlas_co_replicaSet'),
+                         'authSource'=>variable_get('mongoatlas_co_authsource'),
+                         'retryWrites'=>variable_get('mongoatlas_co_retryWrites'),
+                         'serverSelectionTryOnce'=>variable_get('mongoatlas_co_serverSelectionTryOnce'),
+                         'serverSelectionTimeoutMS'=>(int)variable_get('mongoatlas_co_serverSelectionTimeoutMS')
+                       );
+      $client = new MongoDB\Client($uri,$uri_option);
+      // drupal_set_message("Client <pre>".print_r($client,TRUE)."</pre>");
+
+      $db = $client->test;
+      $collection = $db->test;
+
+      // Find last data entry given assetName
+      global $user;
+      $cursor = $collection->find(['assetName' => $user->name, 'telemetry.msg_type' => "GTDTT"],
+        [
+        'sort'  => [ 'date' => -1 ],
+        'limit' => 1
+        ]
+      );
+
+      foreach ($cursor as $document) {
+        $data = $document->jsonSerialize();
+        // echo $data->_id;
+        $telemetry = $data->telemetry->jsonSerialize();
+        $weight = $telemetry->total_truck;
+      }
+
+      // drupal_set_message("<pre>".print_r($form['vgm_weight'],TRUE)."</pre>");
+      // set weight value
+      $form['vgm_weight'][LANGUAGE_NONE][0]['value']['#value'] = $weight*1000;
+      // disable form input
+      $form['vgm_weight'][LANGUAGE_NONE][0]['value']['#attributes']['readonly'] = 'readonly';
+      // Unset mandatory values in order to save partial filled node
       unset($form['vgm_place']);
       unset($form['vgm_weight_method']);
       unset($form['vgm_authpeople_ref']);
+
+      // Set theme for form
       $form['#theme'] = array('vgm_node_add');
     }
     else {
