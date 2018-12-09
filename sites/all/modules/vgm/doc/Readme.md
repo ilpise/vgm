@@ -7,6 +7,8 @@ You should consider using the driver with the complimentary [PHP library](https:
 
 Further information on this architecture may be found in the [PHP.net documentation](http://php.net/manual/en/mongodb.overview.php).
 
+Manuale di mongo db per le query https://docs.mongodb.com/manual/
+
 ### Insall PHP driver mongodb extension
 
 - **From repositories**
@@ -74,7 +76,7 @@ Writing lock file
 Generating autoload file
 ```
 
-Nel modulo vgm aggiungiamo un file composer.json
+Nel modulo vgm aggiungiamo un file `sites/all/modules/vgm/composer.json`
 ```
 {
     "name": "vgm",
@@ -87,6 +89,11 @@ Nel modulo vgm aggiungiamo un file composer.json
 che specifica che la libreria mongo db è richiesta dal modulo vgm
 
 la libreria/librerie vere e proprie vengono installate nella directory `sites/all/vendor`
+
+Per aggiungere FPDI NON ho utilizzato il modulo ma ho fatto una installazione custom delle librerie FPDI
+> Aggiunta della libreria fpdi per la generazione dei pdf.
+> Ho modificato il file `sites/all/modules/vgm/composer.json` aggiungendo la riga `"setasign/fpdi-fpdf": "^2.1"` tra i require. Al link admin/config/system/composer-manager trovo che la libreira non è installata.
+> sono andato allora alla directoy `/sites/default/files/composer` ed ho lanciato composer update + composer install
 
 - Per ottenere la url cui connettersi
 ![Get MongoDB Atlas connection uri](./img/connect_uri_mongodb_atlas.png)
@@ -113,6 +120,69 @@ test   0.000GB
 MongoDB Enterprise Cluster0-shard-0:PRIMARY> exit
 bye
 
+
+# Mongo db atlas web interface
+per filtrare `{"_id":ObjectId("5bec2e7ab26d22748452cfe3")}`
+
+Abbiamo due strutture principali definite dal type che può essere di tipo `telemetry` oppure `trip`
+
+Esempio di `type:"telemetry"` -> esiste il telemetry Object
+```
+_id:5bec2e7ab26d22748452cff6
+flags:0
+ownerId:"3943e866-cea0-41be-b861-df698485faf3"
+originId:"3102a0ef-c0dd-48fc-80fd-bae80eedd4de"
+type:"telemetry"
+linked:Array
+date:"2018/10/12 10:52:20"
+received:"2018/10/12 10:52:21"
+active:true // oppure false
+location:Object
+zones:Array
+routes:null
+state:null
+telemetry:Object
+io:null
+spd:null
+meta:Object
+assetId:"e0e61257-b804-4930-a64a-71cabb4161a3"
+assetName:"CAL-Trans-Rubiera"
+```
+
+sempio di `type:"trip"` -> tripType
+```
+_id:5bec2e7ab26d22748452cfe3
+ownerId:"3943e866-cea0-41be-b861-df698485faf3"
+id:"5a51e47a-6055-4cfa-800b-5a6ea322ba21"
+assetId:"e0e61257-b804-4930-a64a-71cabb4161a3"
+tripType:"inactive" // oppure "active"
+dateStart:"2018/10/12 10:46:20"
+dateEnd:"2018/10/12 10:51:49"
+start:Object
+end:Object
+stats:Object
+rating:null
+meta:Object
+columns:Array
+records:3
+type:"trip"
+asset:Object
+assetType:Object
+linkedAssets:Array
+maxes:Object
+assetName:"CAL-Trans-Rubiera"
+```
+
+Per la lettura dell'ultimo peso disponibile un buon candidato di query sembra essere
+```
+$cursor = $collection->find(['assetName' => 'CAL-Trans-Rubiera', 'telemetry.msg_type' => "GTDTT"],
+ [
+   'sort'  => [ 'date' => -1 ],
+   'limit' => 1
+ ]
+);
+
+```
 # TODO
 vedi https://app.moqups.com/gianfranco.elia@gmail.com/7XIcbnlwpm/viewm
 
@@ -131,7 +201,17 @@ Back office
 Inserimento dati logo Azienda
 
  - Assegnazione vettore/truck
- - Assegnazione vettore/gruppoditruck -> possibilità di scegliere il truck da interfaccia vettore
+ dalla query
+ ```
+ // Get distinct assetName from the collection.
+ // Può essere usato per associare i nomi dei container
+ $distinct = $collection->distinct('assetName');
+ var_dump($distinct);
+ ```
+ Otteniamo i nomi dei singoli container kimax.
+ Per ogni nome ottenuto creiamo un nodo di tipo kimax (creare il content type) con una user reference ad uno user di tipo vettore.
+
+ - Assegnazione vettore/gruppoditruck -> possibilità di scegliere il container kimax da interfaccia vettore
 
 Back office - Fig CRM di mokups
 è una strisciata del vgm inviato
